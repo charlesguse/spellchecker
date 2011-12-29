@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using spellcheckLibrary;
+using spellcheck;
 
 namespace spellCheckUnitTests
 {
@@ -108,10 +108,7 @@ namespace spellCheckUnitTests
             Assert.IsFalse(Words.Tree['h'].Nodes['i'].Nodes['g'].End);
             Assert.IsTrue(Words.Tree['h'].Nodes['i'].Nodes['g'].Nodes['h'].End);
 
-            // The full word will be on the ending node
-            //Assert.IsEmpty(Words.Tree['h'].Word);
             Assert.AreEqual("hi", Words.Tree['h'].Nodes['i'].GetWord());
-            //Assert.IsEmpty(Words.Tree['h'].Nodes['i'].Nodes['g'].Word);
             Assert.AreEqual("high", Words.Tree['h'].Nodes['i'].Nodes['g'].Nodes['h'].GetWord());
         }
     }
