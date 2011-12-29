@@ -45,9 +45,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\spellcheckLibrary\spellcheckLibrary.csproj">
-      <Project>{E16E9C15-3763-426E-AAC1-14B6FCBF1AE3}</Project>
-      <Name>spellcheckLibrary</Name>
+    <ProjectReference Include="..\spellcheck\spellcheck.csproj">
+      <Project>{65AAB598-8045-4B84-8B11-91CE51A799B3}</Project>
+      <Name>spellcheck</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
