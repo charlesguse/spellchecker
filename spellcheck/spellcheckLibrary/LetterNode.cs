@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace spellcheckLibrary
@@ -9,14 +7,27 @@ namespace spellcheckLibrary
     {
         public char Letter;
         public LetterNode Parent;
-        public List<LetterNode> Nodes;
+        public Dictionary<char, LetterNode> Nodes;
         public bool End;
-        public string Word;
 
         public LetterNode()
         {
-            Word = string.Empty;
-            Nodes = new List<LetterNode>();
+            Nodes = new Dictionary<char, LetterNode>();
+        }
+
+        public string GetWord()
+        {
+            StringBuilder word = new StringBuilder();
+            var traverser = this;
+
+            do
+            {
+                word.Insert(0, traverser.Letter);
+                traverser = traverser.Parent;
+            }
+            while (traverser != null);
+
+            return word.ToString();
         }
     }
 }

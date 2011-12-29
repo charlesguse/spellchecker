@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using spellcheckLibrary;
 
 namespace spellCheckUnitTests
@@ -14,7 +9,7 @@ namespace spellCheckUnitTests
         LetterTree Words;
         
         [SetUp]
-        public void Foo()
+        public void SetUp()
         {
             Words = new LetterTree();
         }
@@ -30,18 +25,16 @@ namespace spellCheckUnitTests
         {
             Words.Add("hi");
             Assert.AreEqual(1, Words.Tree.Count);
-            Assert.AreEqual(1, Words.Tree[0].Nodes.Count);
-            Assert.AreEqual(0, Words.Tree[0].Nodes[0].Nodes.Count);
+            Assert.AreEqual(1, Words.Tree['h'].Nodes.Count);
+            Assert.AreEqual(0, Words.Tree['h'].Nodes['i'].Nodes.Count);
 
-            Assert.AreEqual('h', Words.Tree[0].Letter);
-            Assert.AreEqual('i', Words.Tree[0].Nodes[0].Letter);
+            Assert.AreEqual('h', Words.Tree['h'].Letter);
+            Assert.AreEqual('i', Words.Tree['h'].Nodes['i'].Letter);
 
-            Assert.IsFalse(Words.Tree[0].End);
-            Assert.IsTrue(Words.Tree[0].Nodes[0].End);
+            Assert.IsFalse(Words.Tree['h'].End);
+            Assert.IsTrue(Words.Tree['h'].Nodes['i'].End);
 
-            // The full word will be on the ending node
-            Assert.IsEmpty(Words.Tree[0].Word);
-            Assert.AreEqual("hi", Words.Tree[0].Nodes[0].Word);
+            Assert.AreEqual("hi", Words.Tree['h'].Nodes['i'].GetWord());
         }
 
         [Test]
@@ -51,18 +44,18 @@ namespace spellCheckUnitTests
             Words.Add("a");
 
             Assert.AreEqual(2, Words.Tree.Count);
-            Assert.AreEqual(1, Words.Tree[0].Nodes.Count);  // Order of nodes is
-            Assert.AreEqual(0, Words.Tree[1].Nodes.Count);  // set by order of
-                                                            // words added
-            Assert.AreEqual('h', Words.Tree[0].Letter);
-            Assert.AreEqual('i', Words.Tree[0].Nodes[0].Letter);
+            Assert.AreEqual(1, Words.Tree['h'].Nodes.Count);
+            Assert.AreEqual(0, Words.Tree['a'].Nodes.Count);
 
-            Assert.AreEqual('a', Words.Tree[1].Letter);
+            Assert.AreEqual('h', Words.Tree['h'].Letter);
+            Assert.AreEqual('i', Words.Tree['h'].Nodes['i'].Letter);
 
-            Assert.IsFalse(Words.Tree[0].End);
-            Assert.IsTrue(Words.Tree[0].Nodes[0].End);
+            Assert.AreEqual('a', Words.Tree['a'].Letter);
 
-            Assert.IsTrue(Words.Tree[1].End);
+            Assert.IsFalse(Words.Tree['h'].End);
+            Assert.IsTrue(Words.Tree['h'].Nodes['i'].End);
+
+            Assert.IsTrue(Words.Tree['a'].End);
         }
 
         [Test]
@@ -81,17 +74,17 @@ namespace spellCheckUnitTests
             Words.Add("ha");
 
             Assert.AreEqual(1, Words.Tree.Count);
-            Assert.AreEqual(2, Words.Tree[0].Nodes.Count);
+            Assert.AreEqual(2, Words.Tree['h'].Nodes.Count);
 
-            Assert.AreEqual('h', Words.Tree[0].Letter);
-            Assert.AreEqual('i', Words.Tree[0].Nodes[0].Letter);
+            Assert.AreEqual('h', Words.Tree['h'].Letter);
+            Assert.AreEqual('i', Words.Tree['h'].Nodes['i'].Letter);
 
-            Assert.AreEqual('a', Words.Tree[0].Nodes[1].Letter);
+            Assert.AreEqual('a', Words.Tree['h'].Nodes['a'].Letter);
 
-            Assert.IsFalse(Words.Tree[0].End);
-            Assert.IsTrue(Words.Tree[0].Nodes[0].End);
-            
-            Assert.IsTrue(Words.Tree[0].Nodes[1].End);
+            Assert.IsFalse(Words.Tree['h'].End);
+            Assert.IsTrue(Words.Tree['h'].Nodes['i'].End);
+
+            Assert.IsTrue(Words.Tree['h'].Nodes['a'].End);
         }
 
         [Test]
@@ -100,25 +93,26 @@ namespace spellCheckUnitTests
             Words.Add("high");
             Words.Add("hi");
             Assert.AreEqual(1, Words.Tree.Count);
-            Assert.AreEqual(1, Words.Tree[0].Nodes.Count);
-            Assert.AreEqual(1, Words.Tree[0].Nodes[0].Nodes.Count);
-            Assert.AreEqual(1, Words.Tree[0].Nodes[0].Nodes[0].Nodes.Count);
-            Assert.AreEqual(0, Words.Tree[0].Nodes[0].Nodes[0].Nodes[0].Nodes.Count);
+            Assert.AreEqual(1, Words.Tree['h'].Nodes.Count);
+            Assert.AreEqual(1, Words.Tree['h'].Nodes['i'].Nodes.Count);
+            Assert.AreEqual(1, Words.Tree['h'].Nodes['i'].Nodes['g'].Nodes.Count);
+            Assert.AreEqual(0, Words.Tree['h'].Nodes['i'].Nodes['g'].Nodes['h'].Nodes.Count);
 
-            Assert.AreEqual('h', Words.Tree[0].Letter);
-            Assert.AreEqual('i', Words.Tree[0].Nodes[0].Letter);
-            Assert.AreEqual('g', Words.Tree[0].Nodes[0].Nodes[0].Letter);
-            Assert.AreEqual('h', Words.Tree[0].Nodes[0].Nodes[0].Nodes[0].Letter);
+            Assert.AreEqual('h', Words.Tree['h'].Letter);
+            Assert.AreEqual('i', Words.Tree['h'].Nodes['i'].Letter);
+            Assert.AreEqual('g', Words.Tree['h'].Nodes['i'].Nodes['g'].Letter);
+            Assert.AreEqual('h', Words.Tree['h'].Nodes['i'].Nodes['g'].Nodes['h'].Letter);
 
-            Assert.IsFalse(Words.Tree[0].End);
-            Assert.IsTrue(Words.Tree[0].Nodes[0].End);
-            Assert.IsFalse(Words.Tree[0].Nodes[0].Nodes[0].End);
-            Assert.IsTrue(Words.Tree[0].Nodes[0].Nodes[0].Nodes[0].End);
+            Assert.IsFalse(Words.Tree['h'].End);
+            Assert.IsTrue(Words.Tree['h'].Nodes['i'].End);
+            Assert.IsFalse(Words.Tree['h'].Nodes['i'].Nodes['g'].End);
+            Assert.IsTrue(Words.Tree['h'].Nodes['i'].Nodes['g'].Nodes['h'].End);
 
             // The full word will be on the ending node
-            Assert.IsEmpty(Words.Tree[0].Word);
-            Assert.AreEqual("hi", Words.Tree[0].Nodes[0].Word);
-            Assert.AreEqual("high", Words.Tree[0].Nodes[0].Nodes[0].Nodes[0].Word);
+            //Assert.IsEmpty(Words.Tree['h'].Word);
+            Assert.AreEqual("hi", Words.Tree['h'].Nodes['i'].GetWord());
+            //Assert.IsEmpty(Words.Tree['h'].Nodes['i'].Nodes['g'].Word);
+            Assert.AreEqual("high", Words.Tree['h'].Nodes['i'].Nodes['g'].Nodes['h'].GetWord());
         }
     }
 
@@ -222,15 +216,30 @@ namespace spellCheckUnitTests
             Assert.AreEqual("conspiracy", Words.Spellcheck("CUNsperrICY"));
         }
 
-        //[Test]
-        //public void SpellcheckWordsThatNeedBacktrackingToFind()
-        //{
-        //    Words.Add("wake");
-        //    Words.Add("west");
+        [Test]
+        public void SpellcheckWordsThatNeedBacktrackingToFind()
+        {
+            Words.Add("wake");
+            Words.Add("west");
 
-        //    var actual = Words.Spellcheck("weke");
+            var actual = Words.Spellcheck("weke");
 
-        //    Assert.AreEqual("wake", actual);
-        //}
+            Assert.AreEqual("wake", actual);
+        }
+
+        [Test]
+        public void SpellcheckWordsThatHaveMultipleCasings()
+        {
+            // Actual example from my word list.
+            // That is what made me this is not handled properly
+            Words.Add("Wake");
+            Words.Add("wake");
+
+            var actual = Words.Spellcheck("Wake");
+            Assert.AreEqual("Wake", actual);
+
+            actual = Words.Spellcheck("wake");
+            Assert.AreEqual("wake", actual);
+        }
     }
 }
