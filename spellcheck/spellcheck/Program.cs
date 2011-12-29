@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using spellcheckLibrary;
 using System.IO;
+using spellcheckLibrary;
 
 namespace spellcheck
 {
@@ -13,17 +10,22 @@ namespace spellcheck
         {
             LetterTree Words = new LetterTree();
 
-            //var expected = "a";
+            //Test(Words);
 
-            //Words.Add(expected);
-            //Words.Add("noise");
-            //Words.Add("morenoise");
-            //Words.Add("even more noise");
-            //Words.Add("hihihihihi");
+            string path = "words";
+            if (args.Length != 0)
+            {
+                if (args[0].Trim() == "help" || args[0].Trim() == "/?"
+                    || args[0].Trim() == "?")
+                {
+                    PrintUsage();
+                    return;
+                }
+                else
+                    path = args[0];
+            }
 
-            //var actual = Words.Spellcheck(expected);
-
-            PopulateWords(Words, "words");
+            if (PopulateWords(Words, path))
 
             while (true)
             {
@@ -53,7 +55,7 @@ namespace spellcheck
             Words.Spellcheck("CUNsperrICY");
         }
 
-        static void PopulateWords(LetterTree Words, string filePath)
+        static bool PopulateWords(LetterTree Words, string filePath)
         {
             string line;
             try
@@ -67,9 +69,31 @@ namespace spellcheck
                             Words.Add(line);
                     }
                 }
+
+                return true;
             }
-            catch
-            { }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("\nNo file found at: \"{0}\"\n", filePath);
+                PrintUsage();
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+
+        private static void PrintUsage()
+        {
+            Console.WriteLine("Welcome to Charlie's Amazing Spellchecker!!");
+            Console.WriteLine("");
+            Console.WriteLine("Usage:");
+            Console.WriteLine("");
+            Console.WriteLine("spellcheck <optional file name>");
+            Console.WriteLine("If you want to call it without a filename, put the dictionary");
+            Console.WriteLine("file in this directory ({0}) and name it words", Environment.CurrentDirectory);
         }
     }
 }
