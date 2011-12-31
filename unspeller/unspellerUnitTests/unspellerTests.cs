@@ -11,36 +11,16 @@ namespace unspellerUnitTests
     public class unspellerTests
     {
         [Test]
-        public void RepeatNoLetterTest()
-        {
-            Assert.AreEqual("sheep", unspell.RepeatLetter("sheep", 0, 0));
-        }
-
-        [Test]
-        public void RepeatLetterTest()
-        {
-            Assert.AreEqual("sheeeeep", unspell.RepeatLetter("sheep", 2, 3));
-        }
-
-        [Test]
-        public void RepeatMultipleLettersTest()
-        {
-            var actual = unspell.RepeatLetter("job", 0, 1);    // jjob
-            actual = unspell.RepeatLetter(actual, 2, 1);       // jjoob
-            actual = unspell.RepeatLetter(actual, 4, 2);       // jjoobbb
-            Assert.AreEqual("jjoobbb", actual);
-        }
-
-        [Test]
         public void ChangeCaseFromLowerToUpperTest()
         {
-            Assert.AreEqual("Inside", unspell.ChangeCase("inside", 0));
+
+            Assert.AreEqual('I', unspell.ChangeCase('i'));
         }
 
         [Test]
         public void ChangeCaseFromUpperToLowerTest()
         {
-            Assert.AreEqual("insIDE", unspell.ChangeCase("inSIDE", 2));
+            Assert.AreEqual('i', unspell.ChangeCase('I'));
         }
 
         [Test]
@@ -49,13 +29,71 @@ namespace unspellerUnitTests
             // They are in my dictionary, so I figured
             // I would see how changing the case worked with
             // non-english characters.
-            Assert.AreEqual("å", unspell.ChangeCase("Å", 0));
+            Assert.AreEqual('å', unspell.ChangeCase('Å'));
         }
 
         [Test]
         public void ChangeCharacterTest()
         {
             Assert.AreEqual("weke", unspell.ChangeCharacter("wake", 1, 'e'));
+        }
+
+        [Test]
+        public void ChangeNoVowelWordTest()
+        {
+            var actual = unspell.ChangeVowels("blrg");
+
+            Assert.AreEqual("blrg", actual);
+        }
+
+        [Test]
+        public void ChangeAllVowelsTest()
+        {
+            // Not a practical example, but gets the job done
+            var actual = unspell.ChangeVowels("eiouya", true);
+
+            Assert.AreEqual("aeiouy", actual);
+        }
+
+        [Test]
+        public void ChangeCapitalVowelTest()
+        {
+            // Not a practical example, but gets the job done
+            var actual = unspell.ChangeVowels("E", true);
+
+            Assert.AreEqual("A", actual);
+        }
+
+        [Test]
+        public void ChangeWordTest()
+        {
+            var actual = unspell.ChangeVowels("sheep", true);
+
+            Assert.AreEqual("shaep", actual);
+        }
+
+        [Test]
+        public void GetRepeatingCharDataTest()
+        {
+            var actual = unspell.RepeatCharacters("job", true);
+
+            Assert.AreEqual("joobbb", actual);
+        }
+
+        [Test]
+        public void ChangeCapatalizeationOnWordTest()
+        {
+            var actual = unspell.ChangeCapatlizationOnWord("yUp", true);
+
+            Assert.AreEqual("YuP", actual);
+        }
+
+        [Test]
+        public void UnspellWordTest()
+        {
+            var actual = unspell.UnspellWord("yUp", true);
+
+            Assert.AreEqual("AeePPP", actual);
         }
     }
 }

@@ -96,7 +96,7 @@ namespace spellcheck
 
         private LetterNode TraverseNode(string word, TraversalData traversal)
         {
-            if (traversal.Location < word.Length - 1)
+            if (word.Length > 0 && traversal.Location < word.Length - 1)
             {
                 var potentialKey = word[traversal.Location + 1];
 
