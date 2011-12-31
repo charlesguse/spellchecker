@@ -7,7 +7,7 @@ namespace spellcheck
     {
         static void Main(string[] args)
         {
-            LetterTree Words = new LetterTree();
+            LetterTree words = new LetterTree();
 
             //Test(Words);
 
@@ -24,13 +24,29 @@ namespace spellcheck
                     path = args[0];
             }
 
-            if (PopulateWords(Words, path))
-
-            while (true)
+            if (PopulateWords(words, path))
             {
-                Console.Write("> ");
-                var line = Console.ReadLine();
-                Console.WriteLine(Words.Spellcheck(line));
+                string line = string.Empty;
+                while (Console.Out != null && Console.In != null)
+                {
+                    Console.Write("> ");
+
+                    do
+                    {
+                        line = Console.ReadLine();
+
+
+                        if (line != null)
+                        {
+                            Console.Write("{0} ", line);
+
+                            line = line.Trim();
+                            Console.WriteLine(words.Spellcheck(line));
+                        }
+                    } while (line == null);
+                }
+
+
             }
         }
 

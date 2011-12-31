@@ -6,37 +6,31 @@ using System.Collections;
 
 namespace unspeller
 {
-    public struct CharacterToChange
+    public struct CharacterChangeData
     {
         public int LetterIndex;
-        public int NewCharacter;
+        public char NewCharacter;
+    }
+
+    public struct CharacterRepeatData
+    {
+        public int LetterIndex;
+        public int TimesToRepeat;
     }
 
     public class unspell
     {
+        static Random rand = new Random();
         public static char[] Vowels = { 'a', 'e', 'i', 'o', 'u', 'y' };
 
-        static public string RepeatLetter(string word, int letterIndex, int timesToRepeat)
+        public static int MAX_TIMES_TO_REPEAT_CHAR = 2;
+
+        public static char ChangeCase(char letter)
         {
-            StringBuilder newWord = new StringBuilder(word);
-            char charToRepeat = newWord[letterIndex];
-            String repeatedChars = new String(charToRepeat,timesToRepeat);
-            newWord.Insert(letterIndex, repeatedChars);
-
-            return newWord.ToString();
-        }
-
-        public static string ChangeCase(string word, int letterIndex)
-        {
-            StringBuilder newWord = new StringBuilder(word);
-
-            if (char.IsLower(newWord[letterIndex]))
-                newWord[letterIndex] = char.ToUpper(newWord[letterIndex]);
+            if (char.IsLower(letter))
+                return char.ToUpper(letter);
             else
-                newWord[letterIndex] = char.ToLower(newWord[letterIndex]);
-
-
-            return newWord.ToString();
+                return char.ToLower(letter);
         }
 
         public static string ChangeCharacter(string word, int letterIndex, char newCharacter)
@@ -46,18 +40,95 @@ namespace unspeller
             return newWord.ToString();
         }
 
-        //public static CharacterToChange FindVowelToChange(string word)
-        //{
-        //    CharacterToChange vowel;
-        //    // If the loop
-        //    vowel.LetterIndex = 0;
-        //    vowel.NewCharacter = word[0];
+        public static string ChangeVowels(string word, bool testMode = false)
+        {
+            StringBuilder newWord = new StringBuilder(word);
+            int vowelToUse = -1;
+            bool changeVowel = false;
 
-        //    for (int i = 0; i < word.Length; i++)
-        //    {
+            for (int i = 0; i < word.Length; i++)
+            {
+                if (IsVowel(word[i]))
+                {
+                    if (testMode)
+                    {
+                        vowelToUse += 1;
+                        vowelToUse %= Vowels.Length;
+                        changeVowel = true;
+                    }
+                    else
+                    {
+                        // Make it so it doesn't always change vowels
+                        if (rand.Next(2) == 0)
+                            changeVowel = false;
+                        else
+                        {
+                            vowelToUse = rand.Next(Vowels.Length);
+                            changeVowel = true;
+                        }
+                    }
 
-        //    }
-        //}
+                    if (changeVowel)
+                    {
+                        if (Char.IsUpper(newWord[i]))
+                            newWord[i] = Char.ToUpper(Vowels[vowelToUse]);
+                        else
+                            newWord[i] = Vowels[vowelToUse];
+                    }
+                }
+            }
+            return newWord.ToString();
+        }
+
+        public static string RepeatCharacters(string word, bool testMode = false)
+        {
+            StringBuilder newWord = new StringBuilder(word);
+            int timesToRepeat = word.Length;
+            char charToRepeat;
+
+            for (int i = word.Length - 1; i >= 0; i--)
+            {
+                if (testMode)
+                    timesToRepeat -= 1;
+                else
+                    timesToRepeat = rand.Next(MAX_TIMES_TO_REPEAT_CHAR);
+                
+                charToRepeat = newWord[i];
+                String repeatedChars = new String(charToRepeat, timesToRepeat);
+                newWord.Insert(i, repeatedChars);
+            }
+            return newWord.ToString();
+        }
+
+        public static string ChangeCapatlizationOnWord(string word, bool testMode = false)
+        {
+            StringBuilder newWord = new StringBuilder(word);
+            bool changeCase;
+
+            for (int i = 0; i < newWord.Length; i++)
+            {
+                if (testMode)
+                    changeCase = true;
+                else
+                {
+                    if (rand.Next(2) == 0)
+                        changeCase = false;
+                    else
+                        changeCase = true;
+                }
+                if (changeCase)
+                    newWord[i] = ChangeCase(newWord[i]);
+            }
+            return newWord.ToString();
+        }
+
+        public static string UnspellWord(string word, bool testMode = false)
+        {
+            word = ChangeVowels(word, testMode);
+            word = RepeatCharacters(word, testMode);
+            word = ChangeCapatlizationOnWord(word, testMode);
+            return word;
+        }
 
         // The vowel related stuff is close to identical in both applications.
         // Normally I wouldn't copy and paste code from one spot to another.
