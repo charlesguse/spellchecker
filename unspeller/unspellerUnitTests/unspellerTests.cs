@@ -11,20 +11,20 @@ namespace unspellerUnitTests
     public class unspellerTests
     {
         [Test]
-        public void ChangeCaseFromLowerToUpperTest()
+        public void ChangeCaseFromLowerToUpper()
         {
 
             Assert.AreEqual('I', unspell.ChangeCase('i'));
         }
 
         [Test]
-        public void ChangeCaseFromUpperToLowerTest()
+        public void ChangeCaseFromUpperToLower()
         {
             Assert.AreEqual('i', unspell.ChangeCase('I'));
         }
 
         [Test]
-        public void DontChangeCaseOfDifferentCultureTest() 
+        public void DontChangeCaseOfDifferentCulture() 
         {
             // DOS window can't handle all culture's letters
             // like Á specifically. It will become a regular A
@@ -34,13 +34,13 @@ namespace unspellerUnitTests
         }
 
         [Test]
-        public void ChangeCharacterTest()
+        public void ChangeCharacter()
         {
             Assert.AreEqual("weke", unspell.ChangeCharacter("wake", 1, 'e'));
         }
 
         [Test]
-        public void ChangeNoVowelWordTest()
+        public void ChangeNoVowelWord()
         {
             var actual = unspell.ChangeVowels("blrg");
 
@@ -48,7 +48,7 @@ namespace unspellerUnitTests
         }
 
         [Test]
-        public void ChangeAllVowelsTest()
+        public void ChangeAllVowels()
         {
             // Not a practical example, but gets the job done
             var actual = unspell.ChangeVowels("eiouya", true);
@@ -57,7 +57,7 @@ namespace unspellerUnitTests
         }
 
         [Test]
-        public void ChangeCapitalVowelTest()
+        public void ChangeCapitalVowel()
         {
             // Not a practical example, but gets the job done
             var actual = unspell.ChangeVowels("E", true);
@@ -66,7 +66,7 @@ namespace unspellerUnitTests
         }
 
         [Test]
-        public void ChangeWordTest()
+        public void ChangeWord()
         {
             var actual = unspell.ChangeVowels("sheep", true);
 
@@ -74,7 +74,7 @@ namespace unspellerUnitTests
         }
 
         [Test]
-        public void GetRepeatingCharDataTest()
+        public void GetRepeatingCharData()
         {
             var actual = unspell.RepeatCharacters("job", true);
 
@@ -82,7 +82,7 @@ namespace unspellerUnitTests
         }
 
         [Test]
-        public void ChangeCapatalizeationOnWordTest()
+        public void ChangeCapatalizeationOnWord()
         {
             var actual = unspell.ChangeCapatlizationOnWord("yUp", true);
 
@@ -90,7 +90,7 @@ namespace unspellerUnitTests
         }
 
         [Test]
-        public void UnspellWordTest()
+        public void UnspellWord()
         {
             var actual = unspell.UnspellWord("yUp", true);
 

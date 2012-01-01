@@ -17,7 +17,7 @@ namespace spellCheckUnitTests
         [Test]
         public void PopulateNoWordInTree()
         {
-            Assert.AreEqual(0, Words.Tree.Count);
+            Assert.IsEmpty(Words.Tree);
         }
 
         [Test]
@@ -78,12 +78,10 @@ namespace spellCheckUnitTests
 
             Assert.AreEqual('h', Words.Tree['h'].Letter);
             Assert.AreEqual('i', Words.Tree['h'].Nodes['i'].Letter);
-
             Assert.AreEqual('a', Words.Tree['h'].Nodes['a'].Letter);
 
             Assert.IsFalse(Words.Tree['h'].End);
             Assert.IsTrue(Words.Tree['h'].Nodes['i'].End);
-
             Assert.IsTrue(Words.Tree['h'].Nodes['a'].End);
         }
 
@@ -119,7 +117,7 @@ namespace spellCheckUnitTests
         LetterTree Words;
 
         [SetUp]
-        public void Foo()
+        public void SetUp()
         {
             Words = new LetterTree();
         }
@@ -228,7 +226,7 @@ namespace spellCheckUnitTests
         public void SpellcheckWordsThatHaveMultipleCasings()
         {
             // Actual example from my word list.
-            // That is what made me this is not handled properly
+            // That is what made me realize that this is not handled properly.
             Words.Add("Wake");
             Words.Add("wake");
 

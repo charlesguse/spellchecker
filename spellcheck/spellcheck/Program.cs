@@ -41,8 +41,6 @@ namespace spellcheck
                         }
                     } while (line == null);
                 }
-
-
             }
         }
 
