@@ -13,7 +13,6 @@ namespace unspeller
             if (!ArgsAreCorrect(args))
                 return;
 
-
             int timesToRun;
             timesToRun = int.Parse(args[0]);
 

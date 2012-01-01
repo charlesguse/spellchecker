@@ -119,11 +119,11 @@ namespace spellcheck
         // This function is called recursively from within itself and from within
         // each letter changing case (including case change)
         // The order is as follows:
-        // Go to the next letter in the word.
-        // If the letter is good, go to the next letter.
-        // Otherwise, change the casing and and try that.
-        // If that doesn't work, check for repeating letters.
-        // Finally, try changing the vowel if it is one.
+        //   Go to the next letter in the word.
+        //   If you can traverse to it, recursively call spellcheck at the next node in the tree
+        //   Then if that returns no suggestion, check repeating letters, vowels, and improper casing.
+        //   If any function returns a word that fits the requirements, stop immediately and return it
+        //   If all options are exhausted, return no suggestion.
         public string Spellcheck(string word, TraversalData traversal,
                                  bool changingVowel = false, bool changingCase = false)
         {
@@ -167,7 +167,7 @@ namespace spellcheck
             // If you already changed the case, don't try checking it again.
             if (!changingCase)
             {
-                var changedCasing = CheckForImpropperCasing(word, traversal, changingVowel);
+                var changedCasing = CheckForImproperCasing(word, traversal, changingVowel);
 
                 if (changedCasing != NO_SUGGESTION_TEXT)
                     return changedCasing;
@@ -175,7 +175,7 @@ namespace spellcheck
             return NO_SUGGESTION_TEXT;
         }
 
-        private string CheckForImpropperCasing(string word, TraversalData traversal,
+        private string CheckForImproperCasing(string word, TraversalData traversal,
                                                bool changingVowel)
         {
             if (0 <= traversal.Depth + 1 && traversal.Depth + 1 < word.Length)
