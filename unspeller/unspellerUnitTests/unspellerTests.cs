@@ -24,12 +24,13 @@ namespace unspellerUnitTests
         }
 
         [Test]
-        public void ChangeCaseOfDifferentCultureTest() 
+        public void DontChangeCaseOfDifferentCultureTest() 
         {
-            // They are in my dictionary, so I figured
-            // I would see how changing the case worked with
-            // non-english characters.
-            Assert.AreEqual('å', unspell.ChangeCase('Å'));
+            // DOS window can't handle all culture's letters
+            // like Á specifically. It will become a regular A
+            // and make the unspeller not realize the cultural
+            // difference.
+            Assert.AreEqual('Á', unspell.ChangeCase('Á'));
         }
 
         [Test]
