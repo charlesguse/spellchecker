@@ -6,7 +6,7 @@ namespace spellcheck
 {
     public struct TraversalData
     {
-        public int Location;
+        public int Depth;
         public LetterNode CurrentNode;
         public Dictionary<char,LetterNode> Nodes;
     }
@@ -25,7 +25,7 @@ namespace spellcheck
         public TraversalData GetRoot()
         {
             TraversalData treeData = new TraversalData();
-            treeData.Location = -1;
+            treeData.Depth = -1;
             treeData.CurrentNode = null;
             treeData.Nodes = Tree;
 
@@ -42,14 +42,14 @@ namespace spellcheck
         {
             LetterNode node;
 
-            if (traversal.Location < word.Length - 1)
+            if (traversal.Depth < word.Length - 1)
             {
                 node = new LetterNode();
                 node.Parent = traversal.CurrentNode;
-                node.Letter = word[++traversal.Location];
+                node.Letter = word[++traversal.Depth];
                 traversal.Nodes.Add(node.Letter,node);
 
-                if (traversal.Location + 1 < word.Length)
+                if (traversal.Depth + 1 < word.Length)
                 {
                     traversal.CurrentNode = node;
                     traversal.Nodes = node.Nodes;
@@ -74,7 +74,7 @@ namespace spellcheck
                 oldSpot = newSpot;
                 newSpot = TraverseOneStep(word, oldSpot);
 
-            } while (oldSpot.Location != newSpot.Location);
+            } while (oldSpot.Depth != newSpot.Depth);
 
             return newSpot;
         }
@@ -87,7 +87,7 @@ namespace spellcheck
             {
                 traversal.CurrentNode = currentNode;
                 traversal.Nodes = currentNode.Nodes;
-                traversal.Location++;
+                traversal.Depth++;
             }
 
             return traversal;
@@ -96,9 +96,9 @@ namespace spellcheck
 
         private LetterNode TraverseNode(string word, TraversalData traversal)
         {
-            if (word.Length > 0 && traversal.Location < word.Length - 1)
+            if (word.Length > 0 && traversal.Depth < word.Length - 1)
             {
-                var potentialKey = word[traversal.Location + 1];
+                var potentialKey = word[traversal.Depth + 1];
 
                 // Check TraversalData.Nodes instead of TraversalData.CurrentNode
                 // because there is not a single tree structure containing all of
@@ -112,7 +112,8 @@ namespace spellcheck
 
         public string Spellcheck(string word)
         {
-            return Spellcheck(word, GetRoot());
+            var root = GetRoot();
+            return Spellcheck(word, root);
         }
 
         // This function is called recursively from within itself and from within
@@ -123,17 +124,19 @@ namespace spellcheck
         // Otherwise, change the casing and and try that.
         // If that doesn't work, check for repeating letters.
         // Finally, try changing the vowel if it is one.
-        public string Spellcheck(string word, TraversalData traversal, 
-                                 bool checkingVowel = false, bool checkingCase = false)
+        public string Spellcheck(string word, TraversalData traversal,
+                                 bool changingVowel = false, bool changingCase = false)
         {
             if (traversal.CurrentNode != null)
             {
                 var currentWord = traversal.CurrentNode.GetWord();
+
                 if (traversal.CurrentNode.End == true && currentWord == word)
                     return currentWord;
             }
+
             var nextLocation = TraverseOneStep(word, traversal);
-            if (traversal.Location != nextLocation.Location)
+            if (traversal.Depth != nextLocation.Depth)
             {
                 var returnedWord = Spellcheck(word, nextLocation);
 
@@ -141,17 +144,10 @@ namespace spellcheck
                     return returnedWord;
             }
 
-            // If you already changed the case, don't try checking it again.
-            if (!checkingCase && 0 <= traversal.Location + 1 && traversal.Location + 1 < word.Length)
-            {
-                var changedCasing = CheckForImpropperCasing(word, traversal);
-
-                if (changedCasing != NO_SUGGESTION_TEXT)
-                    return changedCasing;
-            }
-
-            if (0 <= traversal.Location && word.Length > 1 && traversal.Location + 1 < word.Length
-                && word[traversal.Location] == word[traversal.Location + 1])
+            // If a vowel was changed to cause the repeating character,
+            // don't remove the repeated character.
+            if ((traversal.Depth + 1 < word.Length && !IsVowel(word[traversal.Depth + 1]))
+                || !changingVowel)
             {
                 var processedWord = ProcessRepeatedLetter(word, traversal);
 
@@ -160,44 +156,65 @@ namespace spellcheck
             }
 
             // If you are still checking vowels, so don't try checking them again.
-            if (!checkingVowel && 0 <= traversal.Location + 1 
-                && traversal.Location + 1 < word.Length
-                && IsVowel(word[traversal.Location + 1]))
+            if (!changingVowel)
             {
-                var changedVowel = CheckForIncorrectVowel(word, traversal);
+                var changedVowel = CheckForIncorrectVowel(word, traversal, changingCase);
 
                 if (changedVowel != NO_SUGGESTION_TEXT)
                     return changedVowel;
             }
 
+            // If you already changed the case, don't try checking it again.
+            if (!changingCase)
+            {
+                var changedCasing = CheckForImpropperCasing(word, traversal, changingVowel);
+
+                if (changedCasing != NO_SUGGESTION_TEXT)
+                    return changedCasing;
+            }
             return NO_SUGGESTION_TEXT;
         }
 
-        private string CheckForImpropperCasing(string word, TraversalData traversal)
+        private string CheckForImpropperCasing(string word, TraversalData traversal,
+                                               bool changingVowel)
         {
-            StringBuilder newWord = new StringBuilder(word);
+            if (0 <= traversal.Depth + 1 && traversal.Depth + 1 < word.Length)
+            {
+                StringBuilder newWord = new StringBuilder(word);
 
-            if (char.IsLower(word[traversal.Location + 1]))
-                newWord[traversal.Location + 1] = char.ToUpper(newWord[traversal.Location + 1]);
-            else
-                newWord[traversal.Location + 1] = char.ToLower(newWord[traversal.Location + 1]);
+                if (char.IsLower(word[traversal.Depth + 1]))
+                    newWord[traversal.Depth + 1] = char.ToUpper(newWord[traversal.Depth + 1]);
+                else
+                    newWord[traversal.Depth + 1] = char.ToLower(newWord[traversal.Depth + 1]);
 
-            return Spellcheck(newWord.ToString(), traversal, true, checkingCase: true);
+                return Spellcheck(newWord.ToString(), traversal, changingVowel, true);
+            }
+            return NO_SUGGESTION_TEXT;
         }
 
-        private string CheckForIncorrectVowel(string word, TraversalData traversal)
+        private string CheckForIncorrectVowel(string word, TraversalData traversal,
+                                              bool changingCase)
         {
-            StringBuilder newWord = new StringBuilder(word);
-
-            foreach (char vowel in GetVowel())
+            if (0 <= traversal.Depth + 1
+                && traversal.Depth + 1 < word.Length
+                && IsVowel(word[traversal.Depth + 1]))
             {
-                if (vowel != char.ToLower(word[traversal.Location+1]))
-                {
-                    newWord[traversal.Location+1] = vowel;
-                    var spellcheckReturn = Spellcheck(newWord.ToString(), traversal, checkingVowel: true);
+                StringBuilder newWord = new StringBuilder(word);
 
-                    if (spellcheckReturn != NO_SUGGESTION_TEXT)
-                        return spellcheckReturn;
+                foreach (char vowel in GetVowel())
+                {
+                    if (vowel != char.ToLower(word[traversal.Depth + 1]))
+                    {
+                        if (char.IsUpper(word[traversal.Depth + 1]))
+                            newWord[traversal.Depth + 1] = char.ToUpper(vowel);
+                        else
+                            newWord[traversal.Depth + 1] = vowel;
+
+                        var spellcheckReturn = Spellcheck(newWord.ToString(), traversal, true, changingCase);
+
+                        if (spellcheckReturn != NO_SUGGESTION_TEXT)
+                            return spellcheckReturn;
+                    }
                 }
             }
             return NO_SUGGESTION_TEXT;
@@ -208,23 +225,16 @@ namespace spellcheck
             // Strip off the repeating letter and run it through spellcheck again
             StringBuilder newWord = new StringBuilder(word);
 
-            if (traversal.Location >= 0
-                   && newWord[traversal.Location] == newWord[traversal.Location + 1])
+            if (traversal.Depth + 2 < word.Length
+                && word[traversal.Depth + 1] == word[traversal.Depth + 2])
             {
-                newWord = newWord.Remove(traversal.Location, 1);
+                newWord = newWord.Remove(traversal.Depth + 1, 1);
 
-                if (traversal.CurrentNode.End
-                    && traversal.CurrentNode.GetWord() == newWord.ToString())
-                    return traversal.CurrentNode.GetWord();
-
-                // Try to backtrack one because if you delete on and it lands
-                // on a vowel, you will need to be able switch it out in the
-                // spellcheck function
-                if (traversal.CurrentNode.Parent != null)
+                if (traversal.CurrentNode != null)
                 {
-                    traversal.CurrentNode = traversal.CurrentNode.Parent;
-                    traversal.Nodes = traversal.CurrentNode.Nodes;
-                    traversal.Location--;
+                    if (traversal.CurrentNode.End
+                        && traversal.CurrentNode.GetWord() == newWord.ToString())
+                        return traversal.CurrentNode.GetWord();
                 }
                 var spellCheckedWord = Spellcheck(newWord.ToString(), traversal);
 

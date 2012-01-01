@@ -27,10 +27,15 @@ namespace unspeller
 
         public static char ChangeCase(char letter)
         {
-            if (char.IsLower(letter))
-                return char.ToUpper(letter);
-            else
-                return char.ToLower(letter);
+            if (('a' <= letter && letter <= 'z') || ('A' <= letter && letter <= 'Z'))
+            {
+                if (char.IsLower(letter))
+                    letter = char.ToUpper(letter);
+                else
+                    letter = char.ToLower(letter);
+            }
+            return letter;
+
         }
 
         public static string ChangeCharacter(string word, int letterIndex, char newCharacter)

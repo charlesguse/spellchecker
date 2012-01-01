@@ -9,8 +9,6 @@ namespace spellcheck
         {
             LetterTree words = new LetterTree();
 
-            //Test(Words);
-
             string path = "words";
             if (args.Length != 0)
             {
@@ -27,7 +25,7 @@ namespace spellcheck
             if (PopulateWords(words, path))
             {
                 string line = string.Empty;
-                while (Console.Out != null && Console.In != null)
+                while (true)
                 {
                     Console.Write("> ");
 
@@ -38,8 +36,6 @@ namespace spellcheck
 
                         if (line != null)
                         {
-                            Console.Write("{0} ", line);
-
                             line = line.Trim();
                             Console.WriteLine(words.Spellcheck(line));
                         }
@@ -48,26 +44,6 @@ namespace spellcheck
 
 
             }
-        }
-
-        static void Test(LetterTree Words)
-        {
-            Words.Add("hi");
-            Words.Add("hi");
-            Words.Spellcheck("hi");
-            Words.Add("sheep");
-            Words.Add("people");
-            Words.Add("inside");
-            Words.Add("job");
-            Words.Add("wake");
-            Words.Add("conspiracy");
-
-            Words.Spellcheck("sheeeeep");
-            Words.Spellcheck("peepple");
-            Words.Spellcheck("sheeple");
-            Words.Spellcheck("inSIDE");
-            Words.Spellcheck("jjoobbb");
-            Words.Spellcheck("CUNsperrICY");
         }
 
         static bool PopulateWords(LetterTree Words, string filePath)

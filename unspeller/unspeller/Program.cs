@@ -26,22 +26,16 @@ namespace unspeller
 
             if (words.Length > 0)
             {
-                StringBuilder wordsUnspelled = new StringBuilder();
                 Random rand = new Random();
                 string wordToUnspell;
 
                 while (timesToRun > 0)
                 {
-                    wordToUnspell = "Esterházy's";//words[rand.Next(words.Length)];
-
-                    wordsUnspelled.Append(wordToUnspell);
-                    wordsUnspelled.Append('\n');
+                    wordToUnspell = words[rand.Next(words.Length)];
 
                     Console.WriteLine(unspell.UnspellWord(wordToUnspell));
                     timesToRun--;
                 }
-
-                System.IO.File.WriteAllText("unspelledOutput.txt", wordsUnspelled.ToString());
             }
         }
 

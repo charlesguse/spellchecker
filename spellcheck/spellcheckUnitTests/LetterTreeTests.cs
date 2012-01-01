@@ -238,5 +238,23 @@ namespace spellCheckUnitTests
             actual = Words.Spellcheck("wake");
             Assert.AreEqual("wake", actual);
         }
+
+        [Test]
+        public void SpellcheckWordsThatHaveRepeatingCharactersWithMultipleCasings()
+        {
+            Words.Add("Azov's");
+
+            var actual = Words.Spellcheck("OozZAavv''S");
+            Assert.AreEqual("Azov's", actual);
+        }
+
+        [Test]
+        public void SpellcheckWordsThatHaveRepeatingVowelsNextToOtherVowels()
+        {
+            Words.Add("Beaumont");
+
+            var actual = Words.Spellcheck("bOoaaOOMuUnTt");
+            Assert.AreEqual("Beaumont", actual);
+        }
     }
 }
