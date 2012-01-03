@@ -1,0 +1,42 @@
+Hello Justin.tv :)
+My name is Charlie Guse and this is my solution for the spellcheck problem.
+http://www.justin.tv/problems/spellcheck
+
+
+Non-explaining list version of instructions:
+
+Compiling the source:
+    Open up source/spellcheck/spellcheck.sln
+    Compile it.
+    Open up source/spellcheck/spellcheck/bin/Debug(and Release) and put american-english
+    Rename american-english words for the program.
+
+    Follow the same instructions for unspeller to compile and use that.
+
+Using NUnit:
+    Install from http://www.nunit.org/
+    Run NUnit 2.5.10\bin\net-2.0\nunit-x86.exe (NOT nunit.exe)
+    File > Open Project... and open source/nunit_spellcheck/spellcheck.nunit (give an error if the source isn't compiled)
+    
+    Same for source/nunit_unspeller/unspeller.nunit
+
+
+Explaining paragraph version of instructions:  
+
+    If you compile the source code, you will have to manually put the american-english
+dictionary in the Debug/Release folder and rename it words. I didn't make a post-
+build step for that because I only had to do it once. I deleted all of the pre-
+compiled stuff before sending it to you though. Since you know... space is an issue. ;)
+I just wanted to put the source code in it's most basic form as if you were pulling it
+down from source control.
+
+    I used NUnit 2.5.10.11092 for unit testing. If you use the default executable
+(nunit.exe) you will get a BadImageFormat exception. There is a second executable
+named nunit-x86.exe that you need to use instead. If you are unfamiliar with NUnit,
+to use it, open up nunit-x86.exe, File > Open Project... and then go to
+source/nunit_spellcheck/spellcheck.nunit to load the unit test project. If you get
+an error saying Assembly Not Loaded, you will have to compile the Spellcheck project
+once first so it can find the Release version of the dlls.
+
+    This was created in .net 4.0. If this is an issue. Please let me know.
+    
