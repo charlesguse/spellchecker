@@ -110,7 +110,7 @@ class LetterTree
       
       # If a vowel was chanaged to cause the repeating character,
       # don't remove the repeated character.
-      if (current_depth + 1 < word.length && !LetterTree.is_vowel(word[current_depth+1])) \
+      if (current_depth + 1 < word.length && !LetterTree.is_vowel?(word[current_depth+1])) \
          || !changing_vowel
         returned_word = self.process_repeated_letter(word, traversal)
         
@@ -145,6 +145,7 @@ class LetterTree
   
   def check_for_improper_casing(word, traversal, changing_vowel)
     depth_to_check = traversal.depth + 1
+    
     if 0 <= depth_to_check && depth_to_check < word.length
       new_word = word.clone
       new_word[depth_to_check] = new_word[depth_to_check].swapcase
@@ -155,6 +156,17 @@ class LetterTree
   end
   
   def check_for_incorrect_vowel(word, traversal, changing_case)
+    depth_to_check = traversal.depth + 1
     
+    if 0 <= depth_to_check && deptch_to_check < word.length \
+       && LetterTree.is_vowel?(word[depth_to_check])
+      new_word = word.clone
+      
+      LetterTree.Vowels.each do |vowel|
+        if vowel != word[depth_to_check].downcase
+          
+        end
+      end
+    end
   end
 end
