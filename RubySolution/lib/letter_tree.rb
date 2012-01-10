@@ -1,5 +1,6 @@
 require "#{File.dirname(__FILE__)}/traversal_data"
 require "#{File.dirname(__FILE__)}/letter_node"
+require "#{File.dirname(__FILE__)}/string_extension"
 require "set"
 
 #Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
@@ -82,6 +83,7 @@ class LetterTree
   def spellcheck(word)
     root = self.get_root()
     new_word = self.recursive_spellcheck(word, root)
+    @bad_words.clear()
     return new_word
   end
   
@@ -110,7 +112,7 @@ class LetterTree
       
       # If a vowel was chanaged to cause the repeating character,
       # don't remove the repeated character.
-      if (current_depth + 1 < word.length && !LetterTree.is_vowel?(word[current_depth+1])) \
+      if (current_depth + 1 < word.length && word[current_depth+1].is_vowel?) \
          || !changing_vowel
         returned_word = self.process_repeated_letter(word, traversal)
         
@@ -135,10 +137,10 @@ class LetterTree
         end
       end
       
-      if !bad_words.has_key?(word)
-        bad_words[word] = Set.new
+      if !@bad_words.has_key?(word)
+        @bad_words[word] = Set.new
       end
-      bad_words[word].add(current_depth)
+      @bad_words[word].add(current_depth)
     end
     return @@NO_SUGGESTION_TEXT
   end
@@ -150,7 +152,7 @@ class LetterTree
       new_word = word.clone
       new_word[depth_to_check] = new_word[depth_to_check].swapcase
       
-      return self.spellcheck(new_word, traversal, changing_vowel, true)
+      return self.recursive_spellcheck(new_word, traversal, changing_vowel, true)
     end
     return @@NO_SUGGESTION_TEXT
   end
@@ -158,15 +160,47 @@ class LetterTree
   def check_for_incorrect_vowel(word, traversal, changing_case)
     depth_to_check = traversal.depth + 1
     
-    if 0 <= depth_to_check && deptch_to_check < word.length \
-       && LetterTree.is_vowel?(word[depth_to_check])
+    if 0 <= depth_to_check && depth_to_check < word.length \
+       && word[depth_to_check].is_vowel?
       new_word = word.clone
-      
-      LetterTree.Vowels.each do |vowel|
+      # check each vowel but don't run spellcheck again on the passed in vowel
+      String.Vowels.each do |vowel|
         if vowel != word[depth_to_check].downcase
+          new_word[depth_to_check] = vowel.match_case(new_word[depth_to_check])
           
+          returned_word = self.recursive_spellcheck(new_word, traversal, true, changing_case)
+          
+          if returned_word != @@NO_SUGGESTION_TEXT
+            return returned_word
+          end
         end
       end
     end
+    return @@NO_SUGGESTION_TEXT
+  end
+  
+  def process_repeated_letter(word, traversal)
+    new_word = word.clone
+    while traversal.depth + 2 < new_word.length \
+          && new_word[traversal.depth + 1] == new_word[traversal.depth + 2]
+      new_word.slice!(traversal.depth + 1)
+      
+      if traversal.current_node != nil
+        new_traversal = traversal.clone
+        new_traversal = self.traverse_one_step(new_word, new_traversal)
+        new_traversal = self.traverse_one_step(new_word, new_traversal)
+        
+        if traversal.depth + 2 == new_traversal.depth && new_traversal.current_node.end \
+           && new_traversal.current_node.get_word() == new_word
+          return new_traversal.current_node.get_word()
+        end
+      end
+      returned_word = self.recursive_spellcheck(new_word, traversal)
+          
+      if returned_word != @@NO_SUGGESTION_TEXT
+        return returned_word
+      end
+    end 
+    return @@NO_SUGGESTION_TEXT
   end
 end
