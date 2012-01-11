@@ -6,11 +6,9 @@ require "set"
 class LetterTree
   @@NO_SUGGESTION_TEXT = "NO SUGGESTION"
   
-  # Create the object
   def initialize()
     @tree = {}
     @bad_words = {}
-    @root = self.get_root()
   end
   
   def get_root()
@@ -72,6 +70,12 @@ class LetterTree
     if word.length > 0 && traversal.depth < word.length - 1
       potential_key = word[traversal.depth+1]
       
+      # Check traversal.nodes instead of traversal.current_node.nodes
+      # because there is not a single tree structure containing all of
+      # the nodes. Instead letter_tree has a has containing all of the
+      # different roots. So to handle that case, traversal.nodes will
+      # mimic traversal.current_node.nodes after the root. But at the
+      # root it will have the root from get_root()
       if traversal.nodes.has_key?(potential_key)
         return traversal.nodes[potential_key]
       end
@@ -85,6 +89,8 @@ class LetterTree
     return new_word
   end
   
+  # Depth first check down the tree. If it can't find a word, backtrack and
+  # process repeated letters, different vowels, and then casing.
   def recursive_spellcheck(word, traversal, changing_vowel = false,
                            changing_case = false)
     current_depth = traversal.depth
@@ -108,9 +114,9 @@ class LetterTree
         end
       end
       
-      # If a vowel was chanaged to cause the repeating character,
-      # don't remove the repeated character.
-      if (current_depth + 1 < word.length && word[current_depth+1].is_vowel?) \
+      # If the next character is not a vowel, or if it is a vowel but we didn't
+      # just change it, run spellcheck
+      if (current_depth + 1 < word.length && !word[current_depth+1].is_vowel?) \
          || !changing_vowel
         returned_word = self.process_repeated_letter(word, traversal)
         
