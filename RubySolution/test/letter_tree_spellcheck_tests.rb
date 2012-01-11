@@ -5,8 +5,6 @@ class LetterTree
   attr_accessor :tree, :badWord
 end
 
-
- 
 class LetterTreeSpellcheckTests < Test::Unit::TestCase
   def setup
     @words = LetterTree.new;
