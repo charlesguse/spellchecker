@@ -3,8 +3,6 @@ require "#{File.dirname(__FILE__)}/letter_node"
 require "#{File.dirname(__FILE__)}/string_extension"
 require "set"
 
-#Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
-
 class LetterTree
   @@NO_SUGGESTION_TEXT = "NO SUGGESTION"
   

@@ -1,61 +1,44 @@
 #!/usr/bin/env ruby
+require "./lib/letter_tree"
+require "./lib/shared"
 
-class MegaGreeter
-  attr_accessor :names
-
-  # Create the object
-  def initialize(names = "World")
-    @names = names
-  end
-
-  # Say hi to everybody
-  def say_hi
-    if @names.nil?
-      puts "..."
-    elsif @names.respond_to?("each")
-
-      # @names is a list of some kind, iterate!
-      @names.each do |name|
-        puts "Hello #{name}!"
-      end
-    else
-      puts "Hello #{@names}!"
-    end
-  end
-
-  # Say bye to everybody
-  def say_bye
-    if @names.nil?
-      puts "..."
-    elsif @names.respond_to?("join")
-      # Join the list elements with commas
-      puts "Goodbye #{@names.join(", ")}.  Come back soon!"
-    else
-      puts "Goodbye #{@names}.  Come back soon!"
-    end
-  end
-
+def print_usage()
+  puts("Welcome to Charlie's Amazing Spellchecker!!")
+  puts("")
+  puts("Usage:")
+  puts("")
+  puts("spellcheck <optional file name>")
+  puts("If you want to call it without a filename, put the dictionary")
+  puts("file in this directory (#{File.absolute_path(File.dirname(__FILE__))}) and name it words")
+  puts("or make sure a file named words exists in \"/usr/share/dict/\"")
 end
 
-
-if __FILE__ == $0
-  mg = MegaGreeter.new
-  mg.say_hi
-  mg.say_bye
-
-  # Change name to be "Zeke"
-  mg.names = "Zeke"
-  mg.say_hi
-  mg.say_bye
-
-  # Change the name to an array of names
-  mg.names = ["Albert", "Brenda", "Charles",
-    "Dave", "Englebert"]
-  mg.say_hi
-  mg.say_bye
-
-  # Change to nil
-  mg.names = nil
-  mg.say_hi
-  mg.say_bye
+if __FILE__ == $0 
+  words = LetterTree.new
+  
+  path = nil
+  if ARGV.length != 0
+    arg = ARGV[0].strip
+    if arg == "help" || arg == "--help" || arg == "/?" || arg == "?"
+      print_usage()
+      exit
+    else
+      path = arg
+    end
+  end
+  
+  if Shared.populate_words(words, path)
+    line = ""
+    while line != nil
+      print "> "
+      STDOUT.flush
+      line = $stdin.gets()
+      if line != nil
+        line.strip!
+        puts(words.spellcheck(line))
+      end
+    end
+  else
+    print_usage()
+  end  
 end

@@ -5,8 +5,6 @@ class LetterTree
   attr_accessor :tree, :badWord
 end
 
-
- 
 class LetterTreePopulationTests < Test::Unit::TestCase
   
   def setup
