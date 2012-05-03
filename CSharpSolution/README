@@ -1,7 +1,4 @@
-Hello Justin.tv :)
 My name is Charlie Guse and this is my solution for the spellcheck problem.
-http://www.justin.tv/problems/spellcheck
-
 
 Non-explaining list version of instructions:
 
@@ -38,5 +35,4 @@ source/nunit_spellcheck/spellcheck.nunit to load the unit test project. If you g
 an error saying Assembly Not Loaded, you will have to compile the Spellcheck project
 once first so it can find the Release version of the dlls.
 
-    This was created in .net 4.0. If this is an issue. Please let me know.
-    
+    This was created in .net 4.0.
